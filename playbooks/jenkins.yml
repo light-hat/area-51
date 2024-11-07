@@ -1,0 +1,131 @@
+---
+- name: Install and Configure Jenkins
+  hosts: jenkins_server
+  become: true
+  vars:
+    jenkins_version: "2.387.1"
+    jenkins_home: "/var/lib/jenkins"
+    jenkins_config_path: "/var/lib/jenkins/jenkins.yaml"
+
+  tasks:
+    - name: Install Java (required by Jenkins)
+      apt:
+        name: openjdk-11-jdk
+        state: present
+      tags: java
+
+    - name: Add Jenkins apt key
+      apt_key:
+        url: https://pkg.jenkins.io/debian/jenkins.io.key
+        state: present
+
+    - name: Add Jenkins repository
+      apt_repository:
+        repo: deb http://pkg.jenkins.io/debian-stable binary/
+        state: present
+
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install Jenkins
+      apt:
+        name: jenkins
+        state: present
+        update_cache: yes
+      tags: jenkins
+
+    - name: Ensure Jenkins service is started and enabled
+      systemd:
+        name: jenkins
+        state: started
+        enabled: true
+
+    - name: Wait for Jenkins to be up
+      uri:
+        url: http://localhost:8080
+        status_code: 200
+      register: jenkins_up
+      until: jenkins_up.status == 200
+      retries: 10
+      delay: 15
+
+    - name: Install JCasC plugin
+      uri:
+        url: "http://localhost:8080/pluginManager/installNecessaryPlugins"
+        method: POST
+        user: admin
+        password: "{{ jenkins_admin_password }}"
+        body_format: json
+        body:
+          dynamicLoad: true
+          plugins:
+            - id: "configuration-as-code"
+            - id: "git"
+            - id: "pipeline"
+            - id: "credentials"
+        headers:
+          Content-Type: "application/json"
+      register: plugin_response
+      until: plugin_response.status == 200
+      retries: 10
+      delay: 10
+
+    - name: Create JCasC configuration directory
+      file:
+        path: "{{ jenkins_home }}/casc_configs"
+        state: directory
+        owner: jenkins
+        group: jenkins
+        mode: '0755'
+
+    - name: Upload Jenkins JCasC configuration file
+      copy:
+        dest: "{{ jenkins_config_path }}"
+        content: |
+          jenkins:
+            systemMessage: "Configured by Ansible using JCasC"
+            securityRealm:
+              local:
+                allowsSignup: false
+                users:
+                  - id: admin
+                    password: "{{ jenkins_admin_password }}"
+                    fullName: "Admin"
+                    email: "admin@example.com"
+            authorizationStrategy:
+              loggedInUsersCanDoAnything:
+                allowAnonymousRead: false
+            tools:
+              jdk:
+                installations:
+                  - name: "Default JDK"
+                    home: "/usr/lib/jvm/java-11-openjdk-amd64"
+            unclassified:
+              location:
+                url: "http://localhost:8080/"
+            # Подключение дополнительных плагинов и конфигураций, если необходимо
+
+        owner: jenkins
+        group: jenkins
+        mode: '0644'
+
+    - name: Set JCasC environment variable for Jenkins
+      lineinfile:
+        path: /etc/default/jenkins
+        regexp: '^JENKINS_JAVA_OPTIONS=.*'
+        line: 'JENKINS_JAVA_OPTIONS="-Djenkins.install.runSetupWizard=false -Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts -Dorg.apache.commons.jelly.tags.fmt.timeZone=America/Los_Angeles -Djenkins.install.runSetupWizard=false -Djava.awt.headless=true -Djenkins.model.Jenkins.slaveAgentPort=50000 -Dhudson.model.DirectoryBrowserSupport.CSP="" -Dhudson.security.csrf.GlobalCrumbIssuerConfiguration.DISABLE_CSRF_PROTECTION=true -Dhudson.model.ParametersAction.keepUndefinedParameters=true -Dhudson.Main.development=true -Djenkins.security.ResourceDomainRootURL=http://localhost:8080"'
+
+    - name: Restart Jenkins to apply JCasC configuration
+      systemd:
+        name: jenkins
+        state: restarted
+
+    - name: Verify Jenkins configuration
+      uri:
+        url: http://localhost:8080
+        status_code: 200
+      register: jenkins_restart
+      until: jenkins_restart.status == 200
+      retries: 10
+      delay: 10
