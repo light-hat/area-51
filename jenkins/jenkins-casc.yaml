@@ -1,0 +1,81 @@
+jenkins:
+  systemMessage: "Jenkins сконфигурирован автоматически при помощи JCasC."
+
+  # Security Realm for user authentication
+  securityRealm:
+    local:
+      allowsSignup: false
+      users:
+        - id: "admin"
+          password: "admin"
+
+        - id: "developer"
+          password: "developer"
+
+        - id: "viewer"
+          password: "viewer"
+
+  # Authorization Strategy
+  authorizationStrategy:
+    projectMatrix:
+      entries:
+        - user:
+            name: admin
+            permissions:
+              - Overall/Administer
+        - user:
+            name: developer
+            permissions:
+              - Overall/Read
+              - Job/Build
+        - user:
+            name: viewer
+            permissions:
+              - Overall/Read
+
+# Tool Configuration
+tool:
+  git:
+    installations:
+      - name: "Default"
+        home: "/usr/bin/git"
+  maven:
+    installations:
+      - name: maven3
+        properties:
+          - installSource:
+              installers:
+                - maven:
+                    id: "3.8.4"
+
+# Sample Job Configuration
+jobs:
+  - script: >
+      pipelineJob('example-pipeline-job') {
+      definition {
+        cps {
+            script('''
+                pipeline {
+                    agent any
+                    stages {
+                        stage('Build') {
+                            steps {
+                                echo 'Building...'
+                            }
+                        }
+                        stage('Test') {
+                            steps {
+                                echo 'Testing...'
+                            }
+                        }
+                        stage('Deploy') {
+                            steps {
+                                echo 'Deploying...'
+                            }
+                        }
+                    }
+                }
+            ''')
+            }
+          }
+        }
