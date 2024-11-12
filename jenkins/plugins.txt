@@ -3,3 +3,6 @@ workflow-aggregator
 configuration-as-code
 matrix-auth
 job-dsl
+docker-plugin
+docker-workflow
+credentials-binding

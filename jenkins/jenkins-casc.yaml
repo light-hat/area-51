@@ -1,6 +1,31 @@
 jenkins:
   systemMessage: "Jenkins сконфигурирован автоматически при помощи JCasC."
 
+  clouds:
+    - docker:
+        name: "docker"
+        dockerApi:
+          dockerHost:
+            uri: "unix:///var/run/docker.sock"
+        templates:
+          - labelString: "docker-agent"
+            dockerTemplateBase:
+              image: "jenkins/agent"
+              mounts:
+                - "type=tmpfs,destination=/run"
+                - "type=bind,source=/var/run/docker.sock,destination=/var/run/docker.sock"
+              #  - "type=volume,src=hello,dst=/world"
+              #environmentsString: |
+              #  hello=world
+              #  foo=bar
+            remoteFs: "/home/jenkins/agent"
+            connector:
+              attach:
+                user: "jenkins"
+            instanceCapStr: "10"
+            retentionStrategy:
+              idleMinutes: 1
+
   # Security Realm for user authentication
   securityRealm:
     local:
@@ -52,20 +77,33 @@ tool:
 jobs:
   - script: >
       pipelineJob('example-pipeline-job') {
-      definition {
-        cps {
-            script('''
+        definition {
+          cps {
+            script(''' 
                 pipeline {
-                    agent any
+                    environment {
+                        PIPENV_VENV_IN_PROJECT = "1"
+                    }
+                    agent {
+                        docker {
+                            image 'python:3.8'
+                        }
+                    }
                     stages {
-                        stage('Build') {
+                        stage('Checkout') {
                             steps {
-                                echo 'Building...'
+                                checkout([$class: 'GitSCM', 
+                                          branches: [[name: '*/master']], 
+                                          userRemoteConfigs: [[url: 'https://github.com/light-hat/smart_ids']]
+                                ])
                             }
                         }
-                        stage('Test') {
+                        stage('Prepare') {
                             steps {
-                                echo 'Testing...'
+                                echo 'Preparing environment...'
+                                sh 'pip install -U pip'
+                                sh 'pip install pipenv'
+                                sh 'pipenv install --dev'
                             }
                         }
                         stage('Deploy') {
@@ -76,6 +114,6 @@ jobs:
                     }
                 }
             ''')
-            }
           }
         }
+      }
