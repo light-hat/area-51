@@ -9,7 +9,7 @@ Vagrant.configure("2") do |config|
     dojo.vm.hostname = "defect-dojo"
     dojo.vm.network "private_network", ip: "192.168.133.10"
     dojo.vm.network "forwarded_port", guest: 8080, host: 8081
-    dojo.vm.provider "virtualbox" do |vb|
+    dojo.vm.provider "hyperv" do |vb|
       vb.memory = "2048"
       vb.cpus = 2
     end
@@ -27,7 +27,7 @@ Vagrant.configure("2") do |config|
   config.vm.define "jenkins" do |jenkins|
     jenkins.vm.box = "ubuntu/focal64"
     jenkins.vm.hostname = "jenkins"
-    jenkins.vm.provider "virtualbox" do |vb|
+    jenkins.vm.provider "hyperv" do |vb|
       vb.memory = "2048"
       vb.cpus = 2
     end
@@ -44,7 +44,7 @@ Vagrant.configure("2") do |config|
   config.vm.define "analysis" do |analysis|
     analysis.vm.box = "ubuntu/focal64"
     analysis.vm.hostname = "analysis"
-    analysis.vm.provider "virtualbox" do |vb|
+    analysis.vm.provider "hyperv" do |vb|
       vb.memory = "2048"
       vb.cpus = 2
     end
@@ -54,7 +54,7 @@ Vagrant.configure("2") do |config|
       chmod +x provision.sh && ./provision.sh
       cd /vagrant/sonarqube
       docker-compose up -d --build
-      cd /vagrant/dependency_track
+      cd /vagrant/dependency-track
       docker-compose up -d --build
     SHELL
   end
