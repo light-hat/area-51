@@ -5,7 +5,6 @@ Vagrant.configure("2") do |config|
   config.vm.provider "hyperv" do |h|
       h.memory = 2048
       h.cpus = 2
-      h.virtual_switch = "InternalSwitch"
     end
 
   # DefectDojo
