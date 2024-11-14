@@ -2,17 +2,19 @@
 # vi: set ft=ruby :
 
 Vagrant.configure("2") do |config|
+  config.vm.provider "hyperv" do |h|
+      h.memory = 2048
+      h.cpus = 2
+      h.virtual_switch = "InternalSwitch"
+    end
 
   # DefectDojo
   config.vm.define "defect-dojo" do |dojo|
     dojo.vm.box = "ubuntu/focal64"
     dojo.vm.hostname = "defect-dojo"
+    vm1.vm.synced_folder ".", "/vagrant", type: "hyperv"
     dojo.vm.network "private_network", ip: "192.168.133.10"
     dojo.vm.network "forwarded_port", guest: 8080, host: 8081
-    dojo.vm.provider "hyperv" do |vb|
-      vb.memory = "2048"
-      vb.cpus = 2
-    end
     dojo.vm.provision "shell", inline: <<-SHELL
       chmod +x provision.sh && ./provision.sh
         if [ ! -d "/home/vagrant/django-DefectDojo" ]; then
@@ -27,10 +29,7 @@ Vagrant.configure("2") do |config|
   config.vm.define "jenkins" do |jenkins|
     jenkins.vm.box = "ubuntu/focal64"
     jenkins.vm.hostname = "jenkins"
-    jenkins.vm.provider "hyperv" do |vb|
-      vb.memory = "2048"
-      vb.cpus = 2
-    end
+    vm1.vm.synced_folder ".", "/vagrant", type: "hyperv"
     jenkins.vm.network "private_network", ip: "192.168.133.11"
     jenkins.vm.network "forwarded_port", guest: 8080, host: 8080
     jenkins.vm.provision "shell", inline: <<-SHELL
@@ -44,10 +43,7 @@ Vagrant.configure("2") do |config|
   config.vm.define "analysis" do |analysis|
     analysis.vm.box = "ubuntu/focal64"
     analysis.vm.hostname = "analysis"
-    analysis.vm.provider "hyperv" do |vb|
-      vb.memory = "2048"
-      vb.cpus = 2
-    end
+    vm1.vm.synced_folder ".", "/vagrant", type: "hyperv"
     analysis.vm.network "private_network", ip: "192.168.133.12"
     analysis.vm.network "forwarded_port", guest: 8080, host: 8080
     analysis.vm.provision "shell", inline: <<-SHELL
