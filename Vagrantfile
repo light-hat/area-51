@@ -10,9 +10,7 @@ Vagrant.configure("2") do |config|
   config.vm.define "devsecops" do |devsecops|
     devsecops.vm.box = "ubuntu/focal64"
     devsecops.vm.hostname = "devsecops-vm"
-    devsecops.vm.network "forwarded_port", guest: 9000, host: 9000
-    devsecops.vm.network "forwarded_port", guest: 8080, host: 8080
-    devsecops.vm.network "forwarded_port", guest: 8080, host: 8081
+    devsecops.vm.network "forwarded_port", guest: 80, host: 80
     devsecops.vm.provision "shell", inline: <<-SHELL
       sudo apt update
 
@@ -37,14 +35,14 @@ Vagrant.configure("2") do |config|
       NETWORK_NAME="devsecops_network"
 
       if docker network inspect "$NETWORK_NAME" > /dev/null 2>&1; then
-          echo "Сеть '$NETWORK_NAME' уже существует."
+          echo "Network '$NETWORK_NAME' already exists."
       else
-          echo "Сеть '$NETWORK_NAME' не существует. Создаю сеть..."
+          echo "The network '$NETWORK_NAME' does not exist. I am creating a network..."
           docker network create "$NETWORK_NAME"
           if [ $? -eq 0 ]; then
-              echo "Сеть '$NETWORK_NAME' успешно создана."
+              echo "The network '$NETWORK_NAME' was created successfully."
           else
-              echo "Ошибка при создании сети '$NETWORK_NAME'."
+              echo "Error creating network '$NETWORK_NAME'."
               exit 1
           fi
       fi
@@ -58,6 +56,17 @@ Vagrant.configure("2") do |config|
       cd /vagrant/sonarqube && docker compose up -d --build
 
       cd /vagrant/defectdojo && docker compose up -d --build
+
+      sudo apt-get install -y nginx
+
+      YES | cp -rf /vagrant/nginx/devsecops.conf /etc/nginx/sites-available/devsecops.conf
+
+      ln -fs /etc/nginx/sites-available/devsecops.conf /etc/nginx/sites-enabled/devsecops.conf
+
+      rm -f /etc/nginx/sites-enabled/default
+
+      systemctl restart nginx
+
       SHELL
     end
 

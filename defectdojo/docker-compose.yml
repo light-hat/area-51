@@ -8,14 +8,10 @@ services:
     volumes:
       - defectdojo_media:/usr/share/nginx/html/media
     ports:
-      - target: 8080
-        published: ${DD_PORT:-8081}
-        protocol: tcp
-        mode: host
-      #- target: 8443
-      #  published: ${DD_TLS_PORT:-8443}
-      #  protocol: tcp
-      #  mode: host
+      - "127.0.0.1:8081:8080"
+    networks:
+      - dojo_internal
+      - devsecops_network
   uwsgi:
     image: "defectdojo/defectdojo-django:${DJANGO_VERSION:-latest}"
     depends_on:
@@ -35,6 +31,8 @@ services:
     #    source: extra_settings
     #    target: /app/docker/extra_settings
       - "defectdojo_media:${DD_MEDIA_ROOT:-/app/media}"
+    networks:
+      - dojo_internal
   celerybeat:
     image: "defectdojo/defectdojo-django:${DJANGO_VERSION:-latest}"
     depends_on:
@@ -51,6 +49,8 @@ services:
     #  - type: bind
     #    source: extra_settings
     #    target: /app/docker/extra_settings
+    networks:
+      - dojo_internal
   celeryworker:
     image: "defectdojo/defectdojo-django:${DJANGO_VERSION:-latest}"
     depends_on:
@@ -68,6 +68,8 @@ services:
       #  source: extra_settings
       #  target: /app/docker/extra_settings
       - "defectdojo_media:${DD_MEDIA_ROOT:-/app/media}"
+    networks:
+      - dojo_internal
   initializer:
     image: "defectdojo/defectdojo-django:${DJANGO_VERSION:-latest}"
     depends_on:
@@ -87,6 +89,8 @@ services:
     #  - type: bind
     #    source: extra_settings
     #    target: /app/docker/extra_settings
+    networks:
+      - dojo_internal
   postgres:
     image: postgres:17.1-alpine@sha256:0d9624535618a135c5453258fd629f4963390338b11aaffb92292c12df3a6c17
     environment:
@@ -95,11 +99,20 @@ services:
       POSTGRES_PASSWORD: ${DD_DATABASE_PASSWORD:-defectdojo}
     volumes:
       - defectdojo_postgres:/var/lib/postgresql/data
+    networks:
+      - dojo_internal
   redis:
     image: redis:7.2.5-alpine@sha256:6aaf3f5e6bc8a592fbfe2cccf19eb36d27c39d12dab4f4b01556b7449e7b1f44
     volumes:
       - defectdojo_redis:/data
+    networks:
+      - dojo_internal
 volumes:
   defectdojo_postgres: {}
   defectdojo_media: {}
   defectdojo_redis: {}
+
+networks:
+  devsecops_network:
+    external: true
+  dojo_internal:
