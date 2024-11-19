@@ -1,31 +1,6 @@
 jenkins:
   systemMessage: "Jenkins сконфигурирован автоматически при помощи JCasC."
 
-  clouds:
-    - docker:
-        name: "docker"
-        dockerApi:
-          dockerHost:
-            uri: "unix:///var/run/docker.sock"
-        templates:
-          - labelString: "docker-agent"
-            dockerTemplateBase:
-              image: "jenkins/agent"
-              mounts:
-                - "type=tmpfs,destination=/run"
-                - "type=bind,source=/var/run/docker.sock,destination=/var/run/docker.sock"
-              #  - "type=volume,src=hello,dst=/world"
-              #environmentsString: |
-              #  hello=world
-              #  foo=bar
-            remoteFs: "/home/jenkins/agent"
-            connector:
-              attach:
-                user: "jenkins"
-            instanceCapStr: "10"
-            retentionStrategy:
-              idleMinutes: 1
-
   # Security Realm for user authentication
   securityRealm:
     local:
@@ -76,34 +51,57 @@ tool:
 # Sample Job Configuration
 jobs:
   - script: >
-      pipelineJob('example-pipeline-job') {
+      pipelineJob('Template DevSecOps pipeline') {
+        parameters {
+          stringParam('REPO_URL', 'https://github.com/Contrast-Security-OSS/vulnpy', 'URL репозитория для клонирования')
+          stringParam('BRANCH_NAME', 'master', 'Ветка для клонирования')
+        }
         definition {
           cps {
             script(''' 
                 pipeline {
-                    environment {
-                        PIPENV_VENV_IN_PROJECT = "1"
-                    }
-                    agent {
-                        docker {
-                            image 'python:3.8'
-                        }
-                    }
+                    agent any
                     stages {
                         stage('Checkout') {
                             steps {
                                 checkout([$class: 'GitSCM', 
-                                          branches: [[name: '*/master']], 
-                                          userRemoteConfigs: [[url: 'https://github.com/light-hat/smart_ids']]
+                                          branches: [[name: "*/${params.BRANCH_NAME}"]], 
+                                          userRemoteConfigs: [[url: "${params.REPO_URL}"]]
                                 ])
                             }
                         }
-                        stage('Prepare') {
+                        stage('SAST (Bandit)') {
+                            agent {
+                                docker {
+                                    image 'python:3.10'
+                                }
+                            }
                             steps {
                                 echo 'Preparing environment...'
-                                sh 'pip install -U pip'
-                                sh 'pip install pipenv'
-                                sh 'pipenv install --dev'
+                                sh 'pip install bandit'
+                                sh 'python3 -m bandit -r .'
+                            }
+                        }
+                        stage('SonarQube Analysis') {
+                            steps {
+                                script {
+                                    def scannerHome = tool 'SonarScanner';
+                                    def projectKey=test;
+                                }
+                                withSonarQubeEnv('SonarQube') {
+                                    sh "'${scannerHome}/bin/sonar-scanner' -Dsonar.projectKey=${projectKey} -Dsonar.sources=."
+                                }
+                            }
+                        }
+                        stage('SCA (Dependency-Check)') {
+                            steps {
+                                script {
+                                    dependencyCheck analysisMode: 'INCREMENTAL', 
+                                                   project: 'MyProject', 
+                                                   zipExtensions: '', 
+                                                   failBuildOnCVSS: '7.0', 
+                                                   active: true
+                                }
                             }
                         }
                         stage('Deploy') {

@@ -6,3 +6,7 @@ job-dsl
 docker-plugin
 docker-workflow
 credentials-binding
+pipeline-stage-view
+dependency-check-jenkins-plugin
+sonar
+defectdojo

@@ -1,17 +1,23 @@
 # Python DevSecOps pipeline
 
-Self-service infrastructure for quickly implementing DevSecOps in web projects using Python3.
+Self-service для быстрой интеграции DevSecOps в разработку веб-приложений на Python3.
 
-## Preflight
+## Let's go!
 
-In the hosts file specify the following:
+В файле `hosts` укажите следующее:
 
 ```plaintext
 ...
 ```
 
-## Let's go!
-
 ```shell
 vagrant up
 ```
+
+## Уязвимые приложения
+
+TODO: дописать
+
+## Тестирование эффективности
+
+TODO: сравнительная таблица для заложенных и найденных уязвимостей в приложениях
