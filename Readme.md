@@ -40,6 +40,8 @@
 vagrant up
 ```
 
+<img src="assets/vagrant_demo.gif">
+
 ## 🔒 Первичный доступ к сервисам
 
 ### SonarQube
