@@ -40,7 +40,9 @@
 vagrant up
 ```
 
+<p align="center">
 <img src="assets/vagrant_demo.gif">
+</p>
 
 ## 🔒 Первичный доступ к сервисам
 
