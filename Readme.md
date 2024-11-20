@@ -13,6 +13,10 @@
 
 ## 🚀 Let's go!
 
+<p align="center">
+<img src="assets/vagrant_demo.gif">
+</p>
+
 1. Добавьте следующее в ваш `hosts` файл:
 
 ```text
@@ -39,10 +43,6 @@
 ```shell
 vagrant up
 ```
-
-<p align="center">
-<img src="assets/vagrant_demo.gif">
-</p>
 
 ## 🔒 Первичный доступ к сервисам
 
