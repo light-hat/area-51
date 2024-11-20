@@ -60,14 +60,6 @@
       debug:
         msg: "{{ result.stdout }}"
 
-    - name: Pull Docker images
-      docker_image:
-        name: "{{ item }}"
-        source: pull
-      with_items:
-        - python:3.10
-        - zaproxy/zap-stable:latest
-
     - name: Ensure Docker network exists
       shell:
         cmd: docker network create --driver bridge devsecops_network || true
