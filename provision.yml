@@ -70,7 +70,7 @@
 
     - name: Ensure Docker network exists
       shell:
-        cmd: docker network create --driver bridge my_local_network || true
+        cmd: docker network create --driver bridge devsecops_network || true
 
     - name: Start Jenkins services
       shell:
