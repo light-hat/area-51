@@ -1,4 +1,4 @@
-<h1 align="center"> Python DevSecOps pipeline</h1>
+<h1 align="center">🐍 Python DevSecOps pipeline</h1>
 
 <p align="center">
 <img src="https://img.shields.io/github/license/Ileriayo/markdown-badges?style=for-the-badge">
