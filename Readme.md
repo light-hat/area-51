@@ -1,14 +1,14 @@
-# Python DevSecOps pipeline
+<h1 align="center"> Python DevSecOps pipeline</h1>
 
-Виртуальная инфраструктура для быстрой интеграции DevSecOps в процессы разработки веб-приложений на Python3.
+<p align="center">Виртуальная инфраструктура для быстрой интеграции DevSecOps в процессы разработки веб-приложений на Python3.</p>
 
-## 🛠️ Стек
-
-<p align="left">
+<p align="center">
+<img src="https://img.shields.io/github/license/Ileriayo/markdown-badges?style=for-the-badge">
 <img src="https://img.shields.io/badge/vagrant-%231563FF.svg?style=for-the-badge&logo=vagrant&logoColor=white">
 <img src="https://img.shields.io/badge/ansible-%231A1918.svg?style=for-the-badge&logo=ansible&logoColor=white">
 <img src="https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white">
 <img src="https://img.shields.io/badge/jenkins-%232C5263.svg?style=for-the-badge&logo=jenkins&logoColor=white">
+<img src="https://img.shields.io/badge/SonarQube-black?style=for-the-badge&logo=sonarqube&logoColor=4E9BCD">
 </p>
 
 ## 🚀 Let's go!
