@@ -1,7 +1,5 @@
 <h1 align="center"> Python DevSecOps pipeline</h1>
 
-<p align="center">Виртуальная инфраструктура для быстрой интеграции DevSecOps в процессы разработки веб-приложений на Python3.</p>
-
 <p align="center">
 <img src="https://img.shields.io/github/license/Ileriayo/markdown-badges?style=for-the-badge">
 <img src="https://img.shields.io/badge/vagrant-%231563FF.svg?style=for-the-badge&logo=vagrant&logoColor=white">
@@ -10,6 +8,8 @@
 <img src="https://img.shields.io/badge/jenkins-%232C5263.svg?style=for-the-badge&logo=jenkins&logoColor=white">
 <img src="https://img.shields.io/badge/SonarQube-black?style=for-the-badge&logo=sonarqube&logoColor=4E9BCD">
 </p>
+
+<p align="center">Виртуальная инфраструктура для быстрой интеграции DevSecOps в процессы разработки веб-приложений на Python3.</p>
 
 ## 🚀 Let's go!
 
