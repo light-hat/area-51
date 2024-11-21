@@ -65,8 +65,8 @@ jobs:
                         stage('Checkout') {
                             steps {
                                 checkout([$class: 'GitSCM', 
-                                          branches: [[name: "*/${params.BRANCH_NAME}"]], 
-                                          userRemoteConfigs: [[url: "${params.REPO_URL}"]]
+                                          branches: [[name: "*/${params.BRANCH_NAME}"]], //${params.BRANCH_NAME}
+                                          userRemoteConfigs: [[url: "${params.REPO_URL}"]] //${params.REPO_URL}
                                 ])
                             }
                         }

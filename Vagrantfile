@@ -10,8 +10,8 @@ Vagrant.configure("2") do |config|
     devsecops.vm.network "forwarded_port", guest: 80, host: 80
 
     config.vm.provider "virtualbox" do |vb|
-        vb.memory = 4096
-        vb.cpus = 4
+        vb.memory = "6144"
+        vb.cpus = "5"
     end
 
     config.vm.provision "shell", inline: <<-SHELL
@@ -38,7 +38,7 @@ Vagrant.configure("2") do |config|
 
       sandbox.vm.provider "virtualbox" do |vb|
         vb.memory = "2048"
-        vb.cpus = 2
+        vb.cpus = "2"
       end
 
       sandbox.vm.provision "shell", inline: <<-SHELL
