@@ -1,0 +1,27 @@
+services:
+  zap:
+    image: zaproxy/zap-stable
+    container_name: owasp_zap
+    ports:
+      - "8085:8080"
+      - "8095:8090"
+    environment:
+      - JAVA_OPTS=-Xmx512m
+      - ZAP_API_KEY=your-zap-api-key
+      - ZAP_ENABLE_API=true
+      - ZAP_DISABLE_KEY=false
+    volumes:
+      - ./zap_data:/zap/wrk
+    command: >
+      zap.sh
+      -daemon
+      -host 0.0.0.0
+      -port 8090
+      -config api.addrs.addr.name=.*
+      -config api.addrs.addr.regex=true
+    networks:
+      - devsecops_network
+
+networks:
+  devsecops_network:
+    external: true

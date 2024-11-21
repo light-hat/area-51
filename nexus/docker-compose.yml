@@ -1,0 +1,18 @@
+services:
+  nexus:
+    image: sonatype/nexus3
+    restart: always
+    volumes:
+      - "nexus-data:/sonatype-work"
+    ports:
+      - "8083:8081"
+      - "8085:8085"
+    networks:
+      - devsecops_network
+
+volumes:
+  nexus-data: {}
+
+networks:
+  devsecops_network:
+    external: true

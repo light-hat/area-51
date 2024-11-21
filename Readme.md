@@ -23,6 +23,10 @@
 127.0.0.1 jenkins.devops.local
 127.0.0.1 defectdojo.devops.local
 127.0.0.1 sonarqube.devops.local
+127.0.0.1 nexus.devops.local
+127.0.0.1 zap.devops.local
+127.0.0.1 api.zap.devops.local
+127.0.0.1 sandbox.devops.local
 ```
 
 > [!TIP]
@@ -46,6 +50,14 @@ vagrant up
 
 ## 🔒 Первичный доступ к сервисам
 
+### Jenkins
+
+- Админ: `admin:admin`
+
+- Разработчик: `developer:developer`
+
+- Наблюдатель: `viewer:viewer`
+
 ### SonarQube
 
 Логин: `admin`
@@ -62,13 +74,15 @@ vagrant up
 vagrant ssh -c "cd /vagrant/defectdojo && sudo docker compose logs initializer | grep 'Admin password:'"
 ```
 
-### Jenkins
+### Nexus
 
-- Админ: `admin:admin`
+Логин: `admin`
 
-- Разработчик: `developer:developer`
+Пароль получаем командой:
 
-- Наблюдатель: `viewer:viewer`
+```shell
+vagrant ssh -c "cd /vagrant/nexus && sudo docker compose exec nexus cat /nexus-data/admin.password
+```
 
 ## 🚩 Уязвимые приложения
 

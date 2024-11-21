@@ -45,6 +45,10 @@ cd /vagrant/sonarqube && docker compose up -d --build
 
 cd /vagrant/defectdojo && docker compose up -d --build
 
+cd /vagrant/nexus && docker compose up -d --build
+
+cd /vagrant/zap && docker compose up -d --build
+
 sudo apt-get install -y nginx
 
 cp -rf /vagrant/nginx/devsecops.conf /etc/nginx/sites-available/devsecops.conf

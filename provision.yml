@@ -5,7 +5,7 @@
   vars:
     ansible_connection: local
   tasks:
-    - name: Install aptitude
+    - name: Run apt update
       apt:
         name: aptitude
         state: latest
@@ -34,7 +34,7 @@
         repo: deb https://download.docker.com/linux/ubuntu focal stable
         state: present
 
-    - name: Update apt and install docker-ce
+    - name: Install Docker
       apt:
         name: docker-ce
         state: latest
@@ -60,11 +60,11 @@
       debug:
         msg: "{{ result.stdout }}"
 
-    - name: Ensure Docker network exists
+    - name: Create external Docker network
       shell:
         cmd: docker network create --driver bridge devsecops_network || true
 
-    - name: Start Jenkins services
+    - name: Deploy Jenkins
       shell:
         cmd: docker compose up -d --build
         chdir: /vagrant/jenkins
@@ -76,15 +76,25 @@
         sysctl_set: yes
         state: present
 
-    - name: Start SonarQube services
+    - name: Deploy SonarQube
       shell:
         cmd: docker compose up -d --build
         chdir: /vagrant/sonarqube
 
-    - name: Start DefectDojo services
+    - name: Deploy DefectDojo
       shell:
         cmd: docker compose up -d --build
         chdir: /vagrant/defectdojo
+
+    - name: Deploy Nexus
+      shell:
+        cmd: docker compose up -d --build
+        chdir: /vagrant/nexus
+
+    - name: Deploy OWASP ZAP
+      shell:
+        cmd: docker compose up -d --build
+        chdir: /vagrant/zap
 
     - name: Install Nginx
       apt:
